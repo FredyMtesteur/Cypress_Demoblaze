@@ -26,25 +26,69 @@
 //Personal command for authentification and login
 Cypress.Commands.add("signup", (username, password) => {
   cy.get("#signin2").should("be.visible").click(); //Click Bt Sign up
-  cy.wait(2000);
+  cy.wait(1000);
   cy.get("#sign-username").type(username).should("have.value", username); //username
   cy.get("#sign-password").type(password).should("have.value", password); //password
-  cy.get(
-    "#signInModal > .modal-dialog > .modal-content > .modal-footer > .btn-primary"
-  )
+  cy.get("#signInModal")
+    .find(".btn-primary")
     .should("have.text", "Sign up")
     .click({ force: true }); // Click Bt Sign up -> Valider
-  cy.wait(2000);
+  cy.wait(1000);
 });
 Cypress.Commands.add("login", (username, password) => {
-  cy.get("#login2").should("be.visible").click(); //Click Bt Log in
-  cy.wait(2000);
+  cy.get("#login2").should("be.visible").click(); //Click Bt Log in //
+  cy.wait(1000);
   cy.get("#loginusername").type(username).should("have.value", username); //username
   cy.get("#loginpassword").type(password).should("have.value", password); //password
-  cy.get(
-    "#logInModal > .modal-dialog > .modal-content > .modal-footer > .btn-primary"
-  )
+  cy.get("#logInModal")
+    .find(".btn-primary")
     .should("have.text", "Log in")
     .click(); // Click Bt Log in -> Valider
-  cy.wait(2000);
+  cy.wait(1000);
+});
+
+Cypress.Commands.add("artSelect", (art, artIndex, textPrice, artUrl) => {
+  cy.log("*** Select " | art | " ***");
+  // Assertions
+  cy.get(".card-block")
+    .eq(artIndex)
+    .find(".card-title")
+    .should("be.visible")
+    .and("have.text", art); //Intitulate
+  cy.get(".card-block")
+    .eq(artIndex)
+    .find("h5")
+    .should("be.visible")
+    .and("have.text", textPrice); //Price
+  cy.get(".card")
+    .eq(artIndex)
+    .find(".card-img-top")
+    .should("be.visible")
+    .click(); //Select by Image
+  //Description of art1
+  cy.log("*** Describe " | art | " ***");
+  cy.url().should("include", "/prod.html?idp_=" + artUrl); //url for description
+  cy.get(".name").should("be.visible").and("have.text", art);
+  cy.get(".price-container")
+    .should("be.visible")
+    .and("have.text", textPrice + " " + "*includes tax"); //Price
+});
+
+Cypress.Commands.add("addToCart", () => {
+  cy.log("*** Add to Cart ***");
+  cy.get(".col-sm-12 > .btn")
+    .should("be.visible")
+    .and("have.text", "Add to cart")
+    .click(); //Click to Add to cart
+  cy.wait(1000);
+});
+
+Cypress.Commands.add("goToCart", (totalPrice, art, valPrice) => {
+  cy.log("*** Go to Cart ***");
+  cy.get("#cartur").should("be.visible").and("have.text", "Cart").click(); //click to cart
+  cy.url().should("include", "/cart.html"); //url for cart
+  cy.get("#totalp").should("be.visible").and("have.text", totalPrice); //Total Value price
+  cy.get("#page-wrapper > .row")
+    .should("include.text", art)
+    .and("include.text", valPrice);
 });
